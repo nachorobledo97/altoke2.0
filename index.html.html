@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡AL TOKE!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f0e17;
+    --surface: #1a1828;
+    --surface2: #242235;
+    --accent: #ff6b35;
+    --accent2: #f7c59f;
+    --number-color: #4ecdc4;
+    --letter-color: #ffe66d;
+    --action-color: #ff6b9d;
+    --action-double-color: #c77dff;
+    --text: #fffffe;
+    --text-muted: #a7a9be;
+    --border: rgba(255,255,255,0.08);
+    --red: #ff4757;
+    --green: #2ed573;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(255,107,53,0.08) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, rgba(199,125,255,0.06) 0%, transparent 50%);
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ─── SETUP SCREEN ─── */
+  #setup-screen {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .logo {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .logo h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 8rem);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--action-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(255,107,53,0.4));
+  }
+
+  .logo p {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .setup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: var(--shadow);
+  }
+
+  .setup-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group { margin-bottom: 1.5rem; }
+  .form-group label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+  }
+
+  .player-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+  .player-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+  }
+
+  .player-row input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    padding: 0.25rem 0;
+  }
+
+  .bot-toggle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .bot-toggle.is-bot {
+    background: rgba(199,125,255,0.15);
+    border-color: var(--action-double-color);
+    color: var(--action-double-color);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #e85d28);
+    color: white;
+    width: 100%;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 20px rgba(255,107,53,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,107,53,0.5);
+  }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+  }
+
+  .btn-secondary:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* ─── GAME SCREEN ─── */
+  #game-screen {
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .game-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    background: linear-gradient(135deg, var(--accent), var(--action-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .game-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .direction-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* Players */
+  .players-bar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+
+  .player-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    background: var(--surface2);
+    transition: all 0.3s;
+    min-width: 80px;
+    position: relative;
+  }
+
+  .player-chip.active {
+    border-color: var(--accent);
+    background: rgba(255,107,53,0.1);
+    box-shadow: 0 0 20px rgba(255,107,53,0.2);
+  }
+
+  .player-chip.blocked {
+    opacity: 0.5;
+    border-color: var(--red);
+  }
+
+  .player-chip.winner {
+    border-color: var(--green);
+    background: rgba(46,213,115,0.1);
+  }
+
+  .player-chip .name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+
+  .player-chip .card-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--accent);
+  }
+
+  .player-chip .bot-label {
+    font-size: 0.6rem;
+    color: var(--action-double-color);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .blocked-icon {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--red);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  /* Table area */
+  .table-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .mesa-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .deck-pile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .deck-pile .pile-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* Card */
+  .card {
+    width: 80px;
+    height: 112px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .card.number-card {
+    background: linear-gradient(145deg, #1e3a5f, #0d2137);
+    border-color: var(--number-color);
+    color: var(--number-color);
+    box-shadow: 0 0 12px rgba(78,205,196,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .card.letter-card {
+    background: linear-gradient(145deg, #3d3200, #1f1900);
+    border-color: var(--letter-color);
+    color: var(--letter-color);
+    box-shadow: 0 0 12px rgba(255,230,109,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .card.action-card {
+    background: linear-gradient(145deg, #3d0030, #1f0018);
+    border-color: var(--action-color);
+    color: var(--action-color);
+    box-shadow: 0 0 12px rgba(255,107,157,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .card.action-double-card {
+    background: linear-gradient(145deg, #2a0040, #150020);
+    border-color: var(--action-double-color);
+    color: var(--action-double-color);
+    box-shadow: 0 0 12px rgba(199,125,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .card.deck-card {
+    background: linear-gradient(145deg, var(--surface2), var(--surface));
+    border-color: rgba(255,255,255,0.15);
+    cursor: pointer;
+  }
+
+  .card.deck-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255,107,53,0.3);
+  }
+
+  .card .card-value {
+    font-size: 2.2rem;
+    line-height: 1;
+  }
+
+  .card .card-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    text-align: center;
+    padding: 0 4px;
+    margin-top: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+
+  .card .card-corner {
+    position: absolute;
+    top: 5px;
+    left: 7px;
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  .card-back-pattern {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .mesa-card {
+    width: 90px;
+    height: 126px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    border: 3px solid;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+  }
+
+  .mesa-card.number-card { background: linear-gradient(145deg, #1e3a5f, #0d2137); border-color: var(--number-color); color: var(--number-color); box-shadow: 0 0 30px rgba(78,205,196,0.3); }
+  .mesa-card.letter-card { background: linear-gradient(145deg, #3d3200, #1f1900); border-color: var(--letter-color); color: var(--letter-color); box-shadow: 0 0 30px rgba(255,230,109,0.3); }
+  .mesa-card.action-card { background: linear-gradient(145deg, #3d0030, #1f0018); border-color: var(--action-color); color: var(--action-color); box-shadow: 0 0 30px rgba(255,107,157,0.3); }
+  .mesa-card.action-double-card { background: linear-gradient(145deg, #2a0040, #150020); border-color: var(--action-double-color); color: var(--action-double-color); box-shadow: 0 0 30px rgba(199,125,255,0.3); }
+
+  .mesa-card .card-value { font-size: 2.8rem; line-height: 1; }
+  .mesa-card .card-label { font-size: 0.6rem; letter-spacing: 0.05em; opacity: 0.7; text-align: center; padding: 0 6px; font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; }
+
+  .parity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,230,109,0.15);
+    border: 1px solid var(--letter-color);
+    border-radius: 20px;
+    padding: 0.3rem 0.8rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--letter-color);
+    text-transform: uppercase;
+  }
+
+  /* Hand area */
+  .hand-area {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .hand-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .hand-header .hand-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .hand-cards {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    min-height: 116px;
+    align-items: center;
+  }
+
+  .hand-cards .card {
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .hand-cards .card.playable {
+    cursor: pointer;
+  }
+
+  .hand-cards .card.playable:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+  }
+
+  .hand-cards .card.not-playable {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Log */
+  .log-area {
+    position: fixed;
+    bottom: 220px;
+    right: 1rem;
+    width: 240px;
+    max-height: 160px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 10;
+  }
+
+  .log-entry {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: rgba(15,14,23,0.85);
+    border-left: 2px solid var(--border);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0 4px 4px 0;
+    animation: fadeSlide 0.3s ease;
+    font-family: 'Barlow', sans-serif;
+  }
+
+  .log-entry.highlight { border-color: var(--accent); color: var(--text); }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ─── MODALS ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--shadow);
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .modal p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .modal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .modal-option {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .modal-option:hover {
+    border-color: var(--accent);
+    background: rgba(255,107,53,0.08);
+  }
+
+  .modal-option strong {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+    color: var(--text);
+  }
+
+  .modal-option span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .player-select-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .player-select-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .player-select-btn:hover {
+    border-color: var(--accent);
+    background: rgba(255,107,53,0.1);
+  }
+
+  /* ─── WIN SCREEN ─── */
+  #win-screen {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .win-content {
+    max-width: 400px;
+  }
+
+  .win-content .trophy { font-size: 5rem; margin-bottom: 1rem; }
+  .win-content h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  .win-content .winner-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .win-buttons { display: flex; gap: 1rem; justify-content: center; }
+
+  /* Toast */
+  .toast-container {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+  }
+
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .separator {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+
+  .cut-reaction-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cut-btn {
+    background: rgba(255,230,109,0.1);
+    border: 1px solid var(--letter-color);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    color: var(--letter-color);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .cut-btn:hover { background: rgba(255,230,109,0.2); transform: scale(1.05); }
+
+  .espejito-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .espejito-btn {
+    background: rgba(255,107,157,0.1);
+    border: 1px solid var(--action-color);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    color: var(--action-color);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .espejito-btn:hover { background: rgba(255,107,157,0.25); transform: scale(1.05); }
+
+  .reaction-overlay {
+    display: none;
+    position: fixed;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0.75rem 1.2rem;
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .reaction-overlay.active { display: flex; }
+  .reaction-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══════════════ SETUP SCREEN ══════════════ -->
+<div id="setup-screen" class="screen active">
+  <div class="logo">
+    <h1>¡AL TOKE!</h1>
+    <p>Juego de Reacción · 2–6 Jugadores</p>
+  </div>
+  <div class="setup-card">
+    <h2>Configurar Partida</h2>
+    <div class="form-group">
+      <label>Cantidad de jugadores</label>
+      <select id="playerCount" onchange="updatePlayerList()">
+        <option value="2">2 jugadores</option>
+        <option value="3">3 jugadores</option>
+        <option value="4" selected>4 jugadores</option>
+        <option value="5">5 jugadores</option>
+        <option value="6">6 jugadores</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Jugadores</label>
+      <div class="player-list" id="playerList"></div>
+    </div>
+    <button class="btn btn-primary" onclick="startGame()">🃏 Empezar Partida</button>
+  </div>
+</div>
+
+<!-- ══════════════ GAME SCREEN ══════════════ -->
+<div id="game-screen" class="screen">
+  <div class="game-header">
+    <span class="game-title">¡AL TOKE!</span>
+    <div class="game-info">
+      <span class="direction-badge" id="directionBadge">↻ Horario</span>
+      <span id="parityBadge"></span>
+      <button class="btn btn-secondary" onclick="showRules()">📋 Reglas</button>
+    </div>
+  </div>
+
+  <div class="players-bar" id="playersBar"></div>
+
+  <div class="table-area">
+    <div class="mesa-container">
+      <!-- Deck -->
+      <div class="deck-pile" onclick="drawCard()">
+        <div class="card deck-card">
+          <div class="card-back-pattern">🃏</div>
+        </div>
+        <span class="pile-label" id="deckCount">Mazo</span>
+      </div>
+
+      <div class="separator"></div>
+
+      <!-- Mesa card -->
+      <div id="mesaCardSlot"></div>
+
+      <div class="separator"></div>
+
+      <!-- Discard info -->
+      <div style="text-align:center">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:0.1em;color:var(--text-muted);text-transform:uppercase;margin-bottom:0.3rem;">Descarte</div>
+        <div id="discardCount" style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--text-muted)">0</div>
+      </div>
+    </div>
+
+    <!-- Turn message -->
+    <div id="turnMessage" style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:0.1em;color:var(--text-muted);text-align:center;margin-top:0.5rem;"></div>
+  </div>
+
+  <!-- Reaction overlay for cuts -->
+  <div class="reaction-overlay" id="reactionOverlay">
+    <div class="reaction-title">¡Corte disponible!</div>
+    <div class="cut-reaction-bar" id="cutReactionBar"></div>
+  </div>
+
+  <!-- Espejito overlay -->
+  <div class="reaction-overlay" id="espejitoBanner">
+    <div class="reaction-title">¿Espejito?</div>
+    <div class="espejito-bar" id="espejitoBtns"></div>
+  </div>
+
+  <!-- Log -->
+  <div class="log-area" id="logArea"></div>
+
+  <!-- Hand -->
+  <div class="hand-area">
+    <div class="hand-header">
+      <span class="hand-title" id="handTitle">Tu mano</span>
+      <span id="handCount" style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--text-muted);"></span>
+    </div>
+    <div class="hand-cards" id="handCards"></div>
+  </div>
+</div>
+
+<!-- ══════════════ PASS TURN SCREEN ══════════════ -->
+<div id="pass-screen" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:1.5rem;padding:2rem;text-align:center;">
+    <div style="font-size:3rem;">🙈</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.05em;color:var(--accent);" id="passTitle">Pasá el teléfono</h2>
+    <p style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;letter-spacing:0.1em;color:var(--text-muted);" id="passSubtitle">Es el turno de...</p>
+    <button class="btn btn-primary" style="max-width:280px;" onclick="revealHand()">👁️ Ver mi mano</button>
+  </div>
+</div>
+
+<!-- ══════════════ WIN SCREEN ══════════════ -->
+<div id="win-screen" class="screen">
+  <div class="win-content">
+    <div class="trophy">🏆</div>
+    <h1>¡AL TOKE!</h1>
+    <div class="winner-name" id="winnerName"></div>
+    <div class="win-buttons">
+      <button class="btn btn-primary" onclick="restartGame()">🔄 Jugar de nuevo</button>
+      <button class="btn btn-secondary" onclick="goSetup()">⚙️ Nueva partida</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- Action double choice -->
+<div class="modal-overlay" id="actionDoubleModal">
+  <div class="modal">
+    <h2 id="adModalTitle">Elegí un efecto</h2>
+    <p id="adModalDesc">La carta tiene dos efectos posibles. Elegí uno.</p>
+    <div class="modal-options" id="adModalOptions"></div>
+  </div>
+</div>
+
+<!-- Target player -->
+<div class="modal-overlay" id="targetModal">
+  <div class="modal">
+    <h2 id="targetModalTitle">Elegí un jugador</h2>
+    <p id="targetModalDesc"></p>
+    <div class="player-select-grid" id="targetModalGrid"></div>
+  </div>
+</div>
+
+<!-- Rules -->
+<div class="modal-overlay" id="rulesModal">
+  <div class="modal" style="max-width:560px;max-height:80vh;overflow-y:auto;">
+    <h2>📋 Reglas Rápidas</h2>
+    <div style="font-size:0.85rem;line-height:1.7;color:var(--text-muted);">
+      <p><strong style="color:var(--text)">🎯 Objetivo:</strong> Ser el primero en quedarse sin cartas.</p><br>
+      <p><strong style="color:var(--number-color)">🔢 Escalera:</strong> Jugá un número ±1 del que está en mesa. El 10 y el 1 se conectan.</p><br>
+      <p><strong style="color:var(--letter-color)">🔤 Corte:</strong> Cualquier jugador puede tirar una letra fuera de turno si coincide con la inicial del número en mesa. Solo el primero vale — el segundo roba 1 carta.</p><br>
+      <p><strong style="color:var(--action-color)">⚡ Acciones Simples:</strong><br>
+        • <b>Bloqueo Total</b>: Elegís quién pierde el próximo turno completo.<br>
+        • <b>Manos al Centro</b>: Todos ponen la mano — el último roba 2.<br>
+        • <b>Espejito Rebotín</b>: Revertís una acción perjudicial al que la tiró.<br>
+        • <b>Espejito Doble</b>: Igual pero duplica el efecto (x4 si hay otro doble).<br>
+        • <b>Todos Roban 2</b>: Todos roban 2 cartas (menos vos).</p><br>
+      <p><strong style="color:var(--action-double-color)">✨ Acciones Dobles:</strong> Elegís 1 de 2 efectos.<br>
+        A: Derecha roba 2 / Izquierda roba 2.<br>
+        B: Solo Pares esta ronda / Solo Impares esta ronda.<br>
+        C: Cambiás mano con alguien / Tirás una letra sin respetar el número.<br>
+        D: Salteás a alguien / Alguien roba 2.<br>
+        E: Girás el sentido / Tirás 2 veces seguidas.</p><br>
+      <p><strong style="color:var(--green)">🏆 Victoria:</strong> Primer jugador en quedarse sin cartas. No podés ganar con una acción.</p>
+    </div>
+    <br>
+    <button class="btn btn-secondary" onclick="closeModal('rulesModal')">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DECK DEFINITION
+// ═══════════════════════════════════════════════
+const LETTER_MAP = { 1:'U', 2:'D', 3:'T', 4:'C', 5:'S', 6:'S', 7:'S', 8:'O', 9:'N', 10:'D' };
+
+const LETTER_DIST = { U:4, D:2, T:4, C:2, S:2, O:4, N:4 };
+
+const ACTION_SIMPLES = [
+  { id:'bloqueo', name:'Bloqueo Total', desc:'Elegís quién pierde su turno completo', emoji:'🚫' },
+  { id:'manos', name:'Manos al Centro', desc:'Todos ponen la mano — el último roba 2', emoji:'🙌' },
+  { id:'espejito', name:'Espejito Rebotín', desc:'Revertís una acción perjudicial', emoji:'🪞' },
+  { id:'espejito2', name:'Espejito Doble', desc:'Revertís y duplicás el efecto', emoji:'🪞🪞' },
+  { id:'todos_roban', name:'Todos Roban 2', desc:'Todos roban 2 cartas (menos vos)', emoji:'🃏' },
+];
+
+const ACTION_DOUBLES = [
+  { id:'dbl_a', name:'A', emoji:'👈👉',
+    opt1: { label:'Derecha roba 2', desc:'El jugador a tu derecha roba 2 cartas' },
+    opt2: { label:'Izquierda roba 2', desc:'El jugador a tu izquierda roba 2 cartas' } },
+  { id:'dbl_b', name:'B', emoji:'⚖️',
+    opt1: { label:'Solo Pares', desc:'Esta ronda todos tiran solo números pares' },
+    opt2: { label:'Solo Impares', desc:'Esta ronda todos tiran solo números impares' } },
+  { id:'dbl_c', name:'C', emoji:'🔄',
+    opt1: { label:'Cambiar mano', desc:'Cambiás toda tu mano con otro jugador a tu elección' },
+    opt2: { label:'Letra libre', desc:'Podés tirar una letra sin respetar el número en mesa (este turno)' } },
+  { id:'dbl_d', name:'D', emoji:'🎯',
+    opt1: { label:'Saltear', desc:'Elegís a quién saltear esta ronda' },
+    opt2: { label:'Alguien roba 2', desc:'Elegís quién roba 2 cartas' } },
+  { id:'dbl_e', name:'E', emoji:'↩️',
+    opt1: { label:'Girar sentido', desc:'El sentido de la ronda se invierte' },
+    opt2: { label:'Tirar 2 veces', desc:'Tirás dos cartas seguidas (ambas deben respetar las reglas)' } },
+];
+
+function buildDeck() {
+  const deck = [];
+  // Numbers
+  for (let n = 1; n <= 10; n++) {
+    for (let i = 0; i < 6; i++) {
+      deck.push({ type:'number', value:n, id: `num_${n}_${i}` });
+    }
+  }
+  // Letters
+  for (const [letter, count] of Object.entries(LETTER_DIST)) {
+    for (let i = 0; i < count; i++) {
+      deck.push({ type:'letter', letter, id:`let_${letter}_${i}` });
+    }
+  }
+  // Actions simple (2 each)
+  for (const a of ACTION_SIMPLES) {
+    for (let i = 0; i < 2; i++) {
+      deck.push({ type:'action', action: a.id, name: a.name, desc: a.desc, emoji: a.emoji, id:`act_${a.id}_${i}` });
+    }
+  }
+  // Actions double (2 each)
+  for (const a of ACTION_DOUBLES) {
+    for (let i = 0; i < 2; i++) {
+      deck.push({ type:'action_double', action: a.id, name: a.name, emoji: a.emoji,
+        opt1: a.opt1, opt2: a.opt2, id:`dbl_${a.id}_${i}` });
+    }
+  }
+  return shuffle(deck);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ═══════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════
+let G = {};
+
+function initState(players) {
+  let deck = buildDeck();
+  const hands = players.map(() => []);
+  for (let i = 0; i < 7; i++) {
+    for (let p = 0; p < players.length; p++) {
+      hands[p].push(deck.pop());
+    }
+  }
+  // Find first number card for mesa
+  let mesaCard = null;
+  while (deck.length) {
+    const c = deck.pop();
+    if (c.type === 'number') { mesaCard = c; break; }
+    deck.unshift(c);
+  }
+
+  G = {
+    players,
+    hands,
+    deck,
+    discard: mesaCard ? [mesaCard] : [],
+    mesaCard,
+    activeNumber: mesaCard ? mesaCard.value : null,
+    drawnCardPending: false,
+    currentPlayer: 0,
+    direction: 1, // 1=horario, -1=antihorario
+    blocked: new Set(),
+    parityRule: null, // null | 'even' | 'odd'
+    parityOwner: -1, // who set parity (for when they play again)
+    doubleTurn: false,
+    doubleTurnUsed: false,
+    letterFreeThisTurn: false,
+    pendingEspejito: null, // { effect, sourcePlayer, targetPlayer, multiplier }
+    cutClaimed: false,
+    gameOver: false,
+    log: [],
+  };
+}
+
+// ═══════════════════════════════════════════════
+//  SETUP UI
+// ═══════════════════════════════════════════════
+function updatePlayerList() {
+  const count = parseInt(document.getElementById('playerCount').value);
+  const list = document.getElementById('playerList');
+  list.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Nombre del jugador ${i+1}" value="" id="pname_${i}" oninput="validateNames()">
+      <button class="bot-toggle ${i>0?'is-bot':''}" id="pbot_${i}" onclick="toggleBot(${i})">${i>0?'🤖 Bot':'👤 Humano'}</button>
+    `;
+    list.appendChild(row);
+  }
+  // Reset name inputs for bots and trigger validation
+  for (let i = 0; i < count; i++) {
+    const isBot = document.getElementById(`pbot_${i}`)?.classList.contains('is-bot');
+    if (isBot) document.getElementById(`pname_${i}`).placeholder = `Nombre del bot ${i+1} (opcional)`;
+  }
+  validateNames();
+}
+
+function toggleBot(i) {
+  const btn = document.getElementById(`pbot_${i}`);
+  if (i === 0) { showToast('El jugador 1 siempre es humano'); return; }
+  btn.classList.toggle('is-bot');
+  btn.textContent = btn.classList.contains('is-bot') ? '🤖 Bot' : '👤 Humano';
+  const input = document.getElementById(`pname_${i}`);
+  input.placeholder = btn.classList.contains('is-bot') ? `Nombre del bot ${i+1} (opcional)` : `Nombre del jugador ${i+1}`;
+  validateNames();
+}
+
+function validateNames() {
+  const count = parseInt(document.getElementById('playerCount').value);
+  const names = [];
+  for (let i = 0; i < count; i++) {
+    const isBot = document.getElementById(`pbot_${i}`).classList.contains('is-bot');
+    if (!isBot) names.push(document.getElementById(`pname_${i}`).value.trim());
+  }
+  const hasDupes = names.length !== new Set(names).size;
+  const hasEmpty = names.some(n => n === '');
+  const btn = document.querySelector('.btn-primary');
+  if (btn) {
+    btn.disabled = hasDupes || hasEmpty;
+    btn.style.opacity = (hasDupes || hasEmpty) ? '0.4' : '1';
+    if (hasDupes) btn.textContent = '⚠️ Nombres duplicados';
+    else if (hasEmpty) btn.textContent = '⚠️ Completá todos los nombres';
+    else btn.textContent = '🃏 Empezar Partida';
+  }
+}
+
+function startGame() {
+  const count = parseInt(document.getElementById('playerCount').value);
+  const players = [];
+  for (let i = 0; i < count; i++) {
+    const isBot = document.getElementById(`pbot_${i}`).classList.contains('is-bot');
+    const raw = document.getElementById(`pname_${i}`).value.trim();
+    const name = isBot ? (raw || `Bot ${i+1}`) : (raw || `Jugador ${i+1}`);
+    players.push({ name, isBot });
+  }
+  initState(players);
+  addLog(`🃏 Partida iniciada. Turno de ${G.players[G.currentPlayer].name}`, true);
+  if (G.players[G.currentPlayer].isBot) {
+    showScreen('game-screen');
+    renderAll();
+    setTimeout(botTurn, 1200);
+  } else {
+    // If only one human (player 0), go straight to game
+    const humanCount = G.players.filter(p => !p.isBot).length;
+    if (humanCount === 1) {
+      showScreen('game-screen');
+      renderAll();
+    } else {
+      showPassScreen(G.currentPlayer);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════
+function renderAll() {
+  renderPlayers();
+  renderMesa();
+  renderHand();
+  renderDeckCount();
+  renderTurnMessage();
+  renderCutReactions();
+  renderParityBadge();
+  document.getElementById('directionBadge').textContent = G.direction === 1 ? '↻ Horario' : '↺ Antihorario';
+}
+
+function renderPlayers() {
+  const bar = document.getElementById('playersBar');
+  bar.innerHTML = '';
+  G.players.forEach((p, i) => {
+    const chip = document.createElement('div');
+    chip.className = `player-chip${i===G.currentPlayer?' active':''}${G.blocked.has(i)?' blocked':''}`;
+    chip.innerHTML = `
+      <span class="name">${p.name}</span>
+      <span class="card-count">${G.hands[i].length}</span>
+      ${p.isBot ? '<span class="bot-label">🤖 bot</span>' : ''}
+      ${G.blocked.has(i) ? '<span class="blocked-icon">🚫</span>' : ''}
+    `;
+    bar.appendChild(chip);
+  });
+}
+
+function cardHTML(card, extra='') {
+  if (!card) return '';
+  const typeClass = card.type === 'number' ? 'number-card' :
+                    card.type === 'letter' ? 'letter-card' :
+                    card.type === 'action' ? 'action-card' : 'action-double-card';
+  let value = '', label = '';
+  if (card.type === 'number') { value = card.value; label = numName(card.value); }
+  else if (card.type === 'letter') { value = card.letter; label = 'Letra'; }
+  else if (card.type === 'action') { value = card.emoji; label = card.name; }
+  else { value = card.emoji; label = 'Doble: '+card.name; }
+  return `<div class="card ${typeClass} ${extra}" data-id="${card.id}">
+    <span class="card-corner">${value}</span>
+    <span class="card-value">${value}</span>
+    <span class="card-label">${label}</span>
+  </div>`;
+}
+
+function mesaCardHTML(card) {
+  if (!card) return '<div class="mesa-card" style="border-color:var(--border);background:var(--surface2);"><span style="font-size:2rem;opacity:0.3">?</span></div>';
+  const typeClass = card.type === 'number' ? 'number-card' :
+                    card.type === 'letter' ? 'letter-card' :
+                    card.type === 'action' ? 'action-card' : 'action-double-card';
+  let value = '', label = '';
+  if (card.type === 'number') { value = card.value; label = numName(card.value); }
+  else if (card.type === 'letter') { value = card.letter; label = 'Letra'; }
+  else if (card.type === 'action') { value = card.emoji; label = card.name; }
+  else { value = card.emoji; label = 'Doble'; }
+  return `<div class="mesa-card ${typeClass}">
+    <span class="card-value">${value}</span>
+    <span class="card-label">${label}</span>
+  </div>`;
+}
+
+function renderMesa() {
+  let html = mesaCardHTML(G.mesaCard);
+  // If top card is not a number, show the active number reference below
+  if (G.mesaCard && G.mesaCard.type !== 'number' && G.activeNumber !== null) {
+    html += `<div style="margin-top:0.4rem;font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:0.1em;color:var(--text-muted);text-align:center;text-transform:uppercase;">Número activo: <span style="color:var(--number-color);font-size:1rem;font-weight:700;">${G.activeNumber}</span></div>`;
+  }
+  document.getElementById('mesaCardSlot').innerHTML = html;
+  document.getElementById('discardCount').textContent = G.discard.length;
+}
+
+function renderDeckCount() {
+  document.getElementById('deckCount').textContent = `Mazo (${G.deck.length})`;
+}
+
+function renderParityBadge() {
+  const el = document.getElementById('parityBadge');
+  if (G.parityRule) {
+    el.innerHTML = `<span class="parity-badge">Solo ${G.parityRule === 'even' ? '⚡ PARES' : '🔢 IMPARES'}</span>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function renderHand() {
+  const idx = G.currentPlayer;
+  const p = G.players[idx];
+  const hand = G.hands[idx];
+  if (p.isBot) {
+    document.getElementById('handTitle').textContent = 'Turno del bot';
+    document.getElementById('handCount').textContent = '';
+    document.getElementById('handCards').innerHTML = '<span style="color:var(--text-muted);font-family:Barlow Condensed,sans-serif;font-size:0.9rem;letter-spacing:0.1em;padding:1rem;">El bot está pensando...</span>';
+    return;
+  }
+  document.getElementById('handTitle').textContent = `${p.name} — Tu mano`;
+  document.getElementById('handCount').textContent = `${hand.length} cartas`;
+  const container = document.getElementById('handCards');
+  container.innerHTML = '';
+  const drawnCard = G.drawnCardPending ? hand[hand.length - 1] : null;
+
+  hand.forEach((card, ci) => {
+    const isDrawn = G.drawnCardPending && ci === hand.length - 1;
+    const playable = !G.gameOver && canPlay(card, idx);
+    const wrapper = document.createElement('div');
+    const extraClass = isDrawn ? 'playable drawn-card' : (playable ? 'playable' : 'not-playable');
+    wrapper.innerHTML = cardHTML(card, extraClass);
+    const el = wrapper.firstChild;
+    if (isDrawn) {
+      el.style.outline = '3px solid var(--green)';
+      el.style.outlineOffset = '3px';
+    }
+    if (playable) el.onclick = () => { G.drawnCardPending = false; playCard(idx, card); };
+    container.appendChild(el);
+  });
+
+  // Show pass turn button if a drawn card is pending
+  if (G.drawnCardPending) {
+    const passBtn = document.createElement('button');
+    passBtn.className = 'btn btn-secondary';
+    passBtn.style.cssText = 'flex-shrink:0;align-self:center;margin-left:0.5rem;white-space:nowrap;';
+    passBtn.textContent = '⏭️ Pasar turno';
+    passBtn.onclick = passTurn;
+    container.appendChild(passBtn);
+  }
+}
+
+function renderTurnMessage() {
+  const msg = document.getElementById('turnMessage');
+  if (G.gameOver) { msg.textContent = ''; return; }
+  const p = G.players[G.currentPlayer];
+  if (p.isBot) {
+    msg.textContent = `Turno de ${p.name} (bot)...`;
+  } else {
+    msg.textContent = `Tu turno — jugá una carta o robá del mazo`;
+  }
+}
+
+function renderCutReactions() {
+  const overlay = document.getElementById('reactionOverlay');
+  const bar = document.getElementById('cutReactionBar');
+
+  if (!G.mesaCard || G.mesaCard.type !== 'number' || G.gameOver || G.cutClaimed) {
+    overlay.classList.remove('active');
+    return;
+  }
+
+  const num = G.mesaCard.value;
+  const initial = LETTER_MAP[num];
+  bar.innerHTML = '';
+  let found = false;
+
+  // Show cut buttons for all human players who are NOT the current player
+  G.players.forEach((p, i) => {
+    if (p.isBot || i === G.currentPlayer) return;
+    const matchingLetters = G.hands[i].filter(c => c.type === 'letter' && c.letter === initial);
+    matchingLetters.forEach(card => {
+      const btn = document.createElement('button');
+      btn.className = 'cut-btn';
+      btn.textContent = `✂️ ${p.name}: CORTE ${card.letter}`;
+      btn.onclick = () => doCut(i, card);
+      bar.appendChild(btn);
+      found = true;
+    });
+  });
+
+  if (found) overlay.classList.add('active');
+  else overlay.classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════
+//  GAME LOGIC — PLAY RULES
+// ═══════════════════════════════════════════════
+function numName(n) {
+  const names = {1:'Uno',2:'Dos',3:'Tres',4:'Cuatro',5:'Cinco',6:'Seis',7:'Siete',8:'Ocho',9:'Nueve',10:'Diez'};
+  return names[n] || n;
+}
+
+function getLastNumber() {
+  // Find the last numeric card in discard
+  for (let i = G.discard.length - 1; i >= 0; i--) {
+    if (G.discard[i].type === 'number') return G.discard[i].value;
+  }
+  return G.mesaCard && G.mesaCard.type === 'number' ? G.mesaCard.value : null;
+}
+
+function getCurrentNumber() {
+  // activeNumber tracks the last played NUMBER regardless of letters/actions on top
+  return G.activeNumber !== undefined ? G.activeNumber : null;
+}
+
+function canPlay(card, playerIdx) {
+  if (!card) return false;
+  const currentNum = getCurrentNumber();
+
+  if (card.type === 'number') {
+    if (currentNum === null) return true;
+    if (G.parityRule) {
+      const isEven = card.value % 2 === 0;
+      if (G.parityRule === 'even' && !isEven) return false;
+      if (G.parityRule === 'odd' && isEven) return false;
+    }
+    return isAdjacent(card.value, currentNum);
+  }
+
+  if (card.type === 'letter') {
+    if (currentNum === null) return false;
+    // Can't play a letter on top of another letter (last played card must be a number)
+    if (G.mesaCard && G.mesaCard.type === 'letter') return false;
+    if (G.letterFreeThisTurn) return true;
+    return card.letter === LETTER_MAP[currentNum];
+  }
+
+  if (card.type === 'action' || card.type === 'action_double') {
+    return true; // actions can always be played on your turn
+  }
+
+  return false;
+}
+
+function isAdjacent(a, b) {
+  if (Math.abs(a - b) === 1) return true;
+  if ((a === 1 && b === 10) || (a === 10 && b === 1)) return true;
+  return false;
+}
+
+function nextPlayer(from, dir) {
+  const n = G.players.length;
+  return ((from + dir) % n + n) % n;
+}
+
+// ═══════════════════════════════════════════════
+//  PLAY A CARD
+// ═══════════════════════════════════════════════
+function playCard(playerIdx, card) {
+  if (G.gameOver) return;
+  if (G.currentPlayer !== playerIdx) return;
+  if (!canPlay(card, playerIdx)) { showToast('No podés jugar esa carta ⛔'); return; }
+
+  removeFromHand(playerIdx, card);
+  G.discard.push(card);
+  G.mesaCard = card;
+  if (card.type === 'number') G.activeNumber = card.value;
+  // Letters and actions do NOT change G.activeNumber
+  G.cutClaimed = false;
+  G.letterFreeThisTurn = false;
+
+  addLog(`${G.players[playerIdx].name} juega ${cardName(card)}`, true);
+
+  // Check win (only with number or letter)
+  if ((card.type === 'number' || card.type === 'letter') && G.hands[playerIdx].length === 0) {
+    return winGame(playerIdx);
+  }
+
+  if (card.type === 'number' || card.type === 'letter') {
+    advanceTurn(playerIdx);
+  } else if (card.type === 'action') {
+    handleActionSimple(playerIdx, card);
+  } else if (card.type === 'action_double') {
+    handleActionDouble(playerIdx, card);
+  }
+}
+
+function cardName(card) {
+  if (card.type === 'number') return `${card.value} (${numName(card.value)})`;
+  if (card.type === 'letter') return `letra ${card.letter}`;
+  return card.name || card.emoji;
+}
+
+function removeFromHand(playerIdx, card) {
+  const idx = G.hands[playerIdx].findIndex(c => c.id === card.id);
+  if (idx !== -1) G.hands[playerIdx].splice(idx, 1);
+}
+
+function drawFromDeck(playerIdx, count = 1) {
+  for (let i = 0; i < count; i++) {
+    if (G.deck.length === 0) recycleDeck();
+    if (G.deck.length === 0) break;
+    G.hands[playerIdx].push(G.deck.pop());
+  }
+}
+
+function recycleDeck() {
+  if (G.discard.length <= 1) return;
+  const top = G.discard.pop();
+  G.deck = shuffle(G.discard);
+  G.discard = [top];
+  addLog('♻️ Mazo reciclado del descarte');
+}
+
+function advanceTurn(from) {
+  G.drawnCardPending = false;
+  // Check parity reset
+  if (G.parityRule && from === G.parityOwner) {
+    G.parityRule = null;
+    G.parityOwner = -1;
+    addLog('⚖️ Restricción de paridad terminó');
+  }
+
+  if (G.doubleTurn && !G.doubleTurnUsed) {
+    G.doubleTurnUsed = true;
+    renderAll();
+    scheduleBot();
+    return;
+  }
+
+  G.doubleTurn = false;
+  G.doubleTurnUsed = false;
+
+  let next = nextPlayer(from, G.direction);
+  if (G.blocked.has(next)) {
+    addLog(`🚫 ${G.players[next].name} pierde el turno`);
+    G.blocked.delete(next);
+    next = nextPlayer(next, G.direction);
+  }
+  G.currentPlayer = next;
+
+  if (G.players[next].isBot) {
+    renderAll();
+    scheduleBot();
+  } else {
+    showPassScreen(next);
+  }
+}
+
+function scheduleBot() {
+  if (G.players[G.currentPlayer].isBot && !G.gameOver) {
+    setTimeout(botTurn, 800 + Math.random() * 600);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  DRAW CARD (click deck)
+// ═══════════════════════════════════════════════
+function drawCard() {
+  if (G.gameOver) return;
+  const idx = G.currentPlayer;
+  if (G.players[idx].isBot) { showToast('No es tu turno'); return; }
+  if (G.drawnCardPending) { showToast('Ya robaste — jugá la carta o pasá el turno'); return; }
+
+  drawFromDeck(idx, 1);
+  const drawnCard = G.hands[idx][G.hands[idx].length - 1];
+  addLog(`${G.players[idx].name} roba 1 carta`);
+
+  if (canPlay(drawnCard, idx)) {
+    G.drawnCardPending = true;
+    showToast(`¡La carta robada (${cardName(drawnCard)}) es jugable! Jugala o pasá el turno`);
+    renderAll();
+  } else {
+    addLog(`La carta robada no sirve — pasa el turno`);
+    advanceTurn(idx);
+  }
+}
+
+function passTurn() {
+  if (G.gameOver) return;
+  const idx = G.currentPlayer;
+  if (G.players[idx].isBot) return;
+  G.drawnCardPending = false;
+  addLog(`${G.players[idx].name} pasa el turno`);
+  advanceTurn(idx);
+}
+
+// ═══════════════════════════════════════════════
+//  CUT
+// ═══════════════════════════════════════════════
+function doCut(playerIdx, card) {
+  if (G.cutClaimed || G.gameOver) return;
+  if (!G.mesaCard || G.mesaCard.type !== 'number') return;
+  const initial = LETTER_MAP[G.mesaCard.value];
+  if (card.letter !== initial) return;
+
+  G.cutClaimed = true;
+  removeFromHand(playerIdx, card);
+  G.discard.push(card);
+  // Letter cut: mesaCard becomes the letter but activeNumber stays the same
+  G.mesaCard = card;
+  addLog(`✂️ ¡CORTE! ${G.players[playerIdx].name} tira ${card.letter}`, true);
+
+  document.getElementById('reactionOverlay').classList.remove('active');
+
+  if (G.hands[playerIdx].length === 0) return winGame(playerIdx);
+
+  renderAll();
+}
+
+// Bot cut opportunity
+function checkBotCuts(excludeIdx) {
+  if (!G.mesaCard || G.mesaCard.type !== 'number' || G.cutClaimed) return;
+  const initial = LETTER_MAP[G.mesaCard.value];
+  for (let i = 0; i < G.players.length; i++) {
+    if (i === excludeIdx) continue;
+    if (!G.players[i].isBot) continue;
+    const match = G.hands[i].find(c => c.type === 'letter' && c.letter === initial);
+    if (match && Math.random() < 0.6) { // bots aren't perfect
+      G.cutClaimed = true;
+      removeFromHand(i, match);
+      G.discard.push(match);
+      addLog(`✂️ ¡CORTE BOT! ${G.players[i].name} tira ${match.letter}`, true);
+      if (G.hands[i].length === 0) { setTimeout(() => winGame(i), 300); return; }
+      renderAll();
+      return;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ACTION SIMPLE
+// ═══════════════════════════════════════════════
+function handleActionSimple(playerIdx, card) {
+  const action = card.action;
+
+  if (action === 'espejito' || action === 'espejito2') {
+    // Espejito only triggers when a harmful action is played AGAINST you — so here
+    // it does nothing on its own in your own turn. We store it to use reactively.
+    addLog(`🪞 ${G.players[playerIdx].name} guarda el espejito para usarlo cuando le tiren algo`);
+    advanceTurn(playerIdx);
+    return;
+  }
+
+  if (action === 'bloqueo') {
+    pickTarget(playerIdx, 'Elegí a quién bloquear', 'Ese jugador pierde su turno completo', (target) => {
+      G.blocked.add(target);
+      addLog(`🚫 ${G.players[playerIdx].name} bloqueó a ${G.players[target].name}`);
+      advanceTurn(playerIdx);
+    });
+    return;
+  }
+
+  if (action === 'manos') {
+    // Manos al centro — human always last (simulated)
+    const humanIdx = G.players.findIndex(p => !p.isBot);
+    // Simulate: the human is the "last" to put their hand (to make it interesting)
+    let loser = humanIdx; // default
+    // Actually random among non-current players
+    const others = G.players.map((_, i) => i).filter(i => i !== playerIdx);
+    loser = others[Math.floor(Math.random() * others.length)];
+    drawFromDeck(loser, 2);
+    addLog(`🙌 Manos al centro — ${G.players[loser].name} fue el último y roba 2`);
+    advanceTurn(playerIdx);
+    return;
+  }
+
+  if (action === 'todos_roban') {
+    for (let i = 0; i < G.players.length; i++) {
+      if (i !== playerIdx) drawFromDeck(i, 2);
+    }
+    addLog(`🃏 ¡Todos roban 2 cartas!`);
+    advanceTurn(playerIdx);
+    return;
+  }
+
+  advanceTurn(playerIdx);
+}
+
+// ═══════════════════════════════════════════════
+//  ACTION DOUBLE
+// ═══════════════════════════════════════════════
+function handleActionDouble(playerIdx, card) {
+  if (G.players[playerIdx].isBot) {
+    // Bot picks randomly
+    const choice = Math.random() < 0.5 ? 'opt1' : 'opt2';
+    resolveDoubleEffect(playerIdx, card, choice);
+    return;
+  }
+
+  // Human chooses
+  showActionDoubleModal(card, (choice) => {
+    resolveDoubleEffect(playerIdx, card, choice);
+  });
+}
+
+function resolveDoubleEffect(playerIdx, card, choice) {
+  const a = card.action;
+
+  // Check for espejito before resolving harmful effects
+  // (simplified: espejito check is handled reactively by user)
+
+  if (a === 'dbl_a') {
+    const targetIdx = choice === 'opt1'
+      ? nextPlayer(playerIdx, 1)
+      : nextPlayer(playerIdx, -1);
+    const direction = choice === 'opt1' ? 'derecha' : 'izquierda';
+    offerEspejito(playerIdx, targetIdx, () => {
+      drawFromDeck(targetIdx, 2);
+      addLog(`👈 ${G.players[playerIdx].name} jugó "${choice==='opt1'?card.opt1.label:card.opt2.label}": ${G.players[targetIdx].name} roba 2`);
+      advanceTurn(playerIdx);
+    }, 2);
+  }
+
+  else if (a === 'dbl_b') {
+    G.parityRule = choice === 'opt1' ? 'even' : 'odd';
+    G.parityOwner = playerIdx;
+    addLog(`⚖️ ${G.players[playerIdx].name} jugó "${G.parityRule === 'even' ? card.opt1.label : card.opt2.label}": solo ${G.parityRule === 'even' ? 'PARES' : 'IMPARES'} esta ronda`);
+    advanceTurn(playerIdx);
+  }
+
+  else if (a === 'dbl_c') {
+    if (choice === 'opt1') {
+      if (G.players[playerIdx].isBot) {
+        // Bot picks random target
+        const targets = G.players.map((_, i) => i).filter(i => i !== playerIdx);
+        const t = targets[Math.floor(Math.random() * targets.length)];
+        swapHands(playerIdx, t);
+        addLog(`🔄 ${G.players[playerIdx].name} cambió mano con ${G.players[t].name}`);
+        advanceTurn(playerIdx);
+      } else {
+        pickTarget(playerIdx, 'Cambiar mano', 'Elegí con quién cambiar todas tus cartas', (t) => {
+          swapHands(playerIdx, t);
+          addLog(`🔄 ${G.players[playerIdx].name} cambió mano con ${G.players[t].name}`);
+          advanceTurn(playerIdx);
+        });
+      }
+    } else {
+      G.letterFreeThisTurn = true;
+      addLog(`🔤 ${G.players[playerIdx].name} puede tirar una letra libre este turno`);
+      advanceTurn(playerIdx);
+    }
+  }
+
+  else if (a === 'dbl_d') {
+    const doBlock = choice === 'opt1';
+    if (G.players[playerIdx].isBot) {
+      const targets = G.players.map((_, i) => i).filter(i => i !== playerIdx);
+      const t = targets[Math.floor(Math.random() * targets.length)];
+      if (doBlock) {
+        G.blocked.add(t);
+        addLog(`🎯 ${G.players[playerIdx].name} saltea a ${G.players[t].name}`);
+      } else {
+        drawFromDeck(t, 2);
+        addLog(`🎯 ${G.players[playerIdx].name}: ${G.players[t].name} roba 2`);
+      }
+      advanceTurn(playerIdx);
+    } else {
+      pickTarget(playerIdx, doBlock ? 'Saltear jugador' : 'Dar 2 cartas a', '', (t) => {
+        if (doBlock) {
+          G.blocked.add(t);
+          addLog(`🎯 ${G.players[playerIdx].name} saltea a ${G.players[t].name}`);
+        } else {
+          offerEspejito(playerIdx, t, () => {
+            drawFromDeck(t, 2);
+            addLog(`🎯 ${G.players[playerIdx].name}: ${G.players[t].name} roba 2`);
+            advanceTurn(playerIdx);
+          }, 2);
+          return;
+        }
+        advanceTurn(playerIdx);
+      });
+    }
+  }
+
+  else if (a === 'dbl_e') {
+    if (choice === 'opt1') {
+      G.direction *= -1;
+      addLog(`↩️ ${G.players[playerIdx].name} invirtió el sentido`);
+      advanceTurn(playerIdx);
+    } else {
+      G.doubleTurn = true;
+      G.doubleTurnUsed = false;
+      addLog(`⚡ ${G.players[playerIdx].name} juega dos veces`);
+      advanceTurn(playerIdx);
+    }
+  }
+
+  renderAll();
+}
+
+function swapHands(a, b) {
+  const tmp = G.hands[a];
+  G.hands[a] = G.hands[b];
+  G.hands[b] = tmp;
+}
+
+// ═══════════════════════════════════════════════
+//  ESPEJITO LOGIC
+// ═══════════════════════════════════════════════
+function offerEspejito(attackerIdx, targetIdx, resolveCallback, penaltyCount) {
+  const humanIdx = G.players.findIndex(p => !p.isBot);
+
+  // Check if target is human and has an espejito
+  if (targetIdx === humanIdx) {
+    const esp = G.hands[humanIdx].find(c => c.type === 'action' && (c.action === 'espejito' || c.action === 'espejito2'));
+    if (esp) {
+      showEspejitoPrompt(humanIdx, esp, attackerIdx, penaltyCount, resolveCallback);
+      return;
+    }
+  }
+
+  // Bot espejito check
+  if (G.players[targetIdx] && G.players[targetIdx].isBot) {
+    const esp = G.hands[targetIdx].find(c => c.type === 'action' && (c.action === 'espejito' || c.action === 'espejito2'));
+    if (esp && Math.random() < 0.5) {
+      removeFromHand(targetIdx, esp);
+      G.discard.push(esp);
+      const mult = esp.action === 'espejito2' ? 2 : 1;
+      const newPenalty = penaltyCount * mult;
+      drawFromDeck(attackerIdx, newPenalty);
+      addLog(`🪞 ¡${G.players[targetIdx].name} usó ${esp.name}! ${G.players[attackerIdx].name} roba ${newPenalty}`);
+      renderAll();
+      return;
+    }
+  }
+
+  resolveCallback();
+}
+
+function showEspejitoPrompt(playerIdx, espCard, attackerIdx, penaltyCount, resolveCallback) {
+  const banner = document.getElementById('espejitoBanner');
+  const btns = document.getElementById('espejitoBtns');
+  btns.innerHTML = '';
+
+  const useBtn = document.createElement('button');
+  useBtn.className = 'espejito-btn';
+  useBtn.textContent = `🪞 Usar ${espCard.name}`;
+  useBtn.onclick = () => {
+    banner.classList.remove('active');
+    removeFromHand(playerIdx, espCard);
+    G.discard.push(espCard);
+    const mult = espCard.action === 'espejito2' ? 2 : 1;
+    const newPenalty = penaltyCount * mult;
+    drawFromDeck(attackerIdx, newPenalty);
+    addLog(`🪞 ¡${G.players[playerIdx].name} usó ${espCard.name}! ${G.players[attackerIdx].name} roba ${newPenalty}`);
+    renderAll();
+    // Don't call resolveCallback since espejito redirected
+  };
+
+  const skipBtn = document.createElement('button');
+  skipBtn.className = 'btn btn-secondary';
+  skipBtn.style.fontSize = '0.8rem';
+  skipBtn.textContent = 'Aceptar';
+  skipBtn.onclick = () => {
+    banner.classList.remove('active');
+    resolveCallback();
+  };
+
+  btns.appendChild(useBtn);
+  btns.appendChild(skipBtn);
+  banner.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  BOT AI
+// ═══════════════════════════════════════════════
+function botTurn() {
+  if (G.gameOver) return;
+  const idx = G.currentPlayer;
+  if (!G.players[idx].isBot) return;
+
+  // Check cuts from other bots (before turn)
+  checkBotCuts(idx);
+
+  const hand = G.hands[idx];
+  const playable = hand.filter(c => canPlay(c, idx));
+
+  if (playable.length === 0) {
+    drawFromDeck(idx, 1);
+    addLog(`${G.players[idx].name} roba 1 carta`);
+    advanceTurn(idx);
+    renderAll();
+    return;
+  }
+
+  // Strategy: prefer numbers to chain, letters to cut later, actions strategically
+  let chosen = null;
+
+  // Prefer to play a number if hand is big
+  const numbers = playable.filter(c => c.type === 'number');
+  const letters = playable.filter(c => c.type === 'letter');
+  const actions = playable.filter(c => c.type === 'action' || c.type === 'action_double');
+
+  if (numbers.length > 0) chosen = numbers[Math.floor(Math.random() * numbers.length)];
+  else if (letters.length > 0) chosen = letters[0];
+  else if (actions.length > 0) chosen = actions[0];
+
+  if (chosen) {
+    playCard(idx, chosen);
+    renderAll();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  WIN
+// ═══════════════════════════════════════════════
+function winGame(playerIdx) {
+  G.gameOver = true;
+  document.getElementById('winnerName').textContent =
+    `¡${G.players[playerIdx].name} ganó la partida!`;
+  setTimeout(() => showScreen('win-screen'), 800);
+}
+
+// ═══════════════════════════════════════════════
+//  MODALS
+// ═══════════════════════════════════════════════
+function showActionDoubleModal(card, callback) {
+  const modal = document.getElementById('actionDoubleModal');
+  const actionNames = {
+    dbl_a: 'Roba alguien',
+    dbl_b: 'Paridad de números',
+    dbl_c: 'Cambio o letra libre',
+    dbl_d: 'Saltear o penalizar',
+    dbl_e: 'Girar o doble turno'
+  };
+  document.getElementById('adModalTitle').textContent = `${card.emoji} ${actionNames[card.action] || 'Acción Doble'}`;
+  document.getElementById('adModalDesc').textContent = 'Elegí uno de los dos efectos:';
+  const opts = document.getElementById('adModalOptions');
+  opts.innerHTML = '';
+
+  [['opt1', card.opt1], ['opt2', card.opt2]].forEach(([key, opt]) => {
+    const btn = document.createElement('div');
+    btn.className = 'modal-option';
+    btn.innerHTML = `<strong>${opt.label}</strong><span>${opt.desc}</span>`;
+    btn.onclick = () => {
+      closeModal('actionDoubleModal');
+      callback(key);
+    };
+    opts.appendChild(btn);
+  });
+
+  modal.classList.add('active');
+}
+
+function pickTarget(fromIdx, title, desc, callback) {
+  const modal = document.getElementById('targetModal');
+  document.getElementById('targetModalTitle').textContent = title;
+  document.getElementById('targetModalDesc').textContent = desc;
+  const grid = document.getElementById('targetModalGrid');
+  grid.innerHTML = '';
+
+  G.players.forEach((p, i) => {
+    if (i === fromIdx) return;
+    const btn = document.createElement('button');
+    btn.className = 'player-select-btn';
+    btn.textContent = p.name;
+    btn.onclick = () => {
+      closeModal('targetModal');
+      callback(i);
+    };
+    grid.appendChild(btn);
+  });
+
+  modal.classList.add('active');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function showRules() {
+  document.getElementById('rulesModal').classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  LOG
+// ═══════════════════════════════════════════════
+function addLog(msg, highlight = false) {
+  G.log.push(msg);
+  const area = document.getElementById('logArea');
+  const entry = document.createElement('div');
+  entry.className = `log-entry${highlight ? ' highlight' : ''}`;
+  entry.textContent = msg;
+  area.appendChild(entry);
+  // Keep last 8
+  while (area.children.length > 8) area.removeChild(area.firstChild);
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 2600);
+}
+
+// ═══════════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function restartGame() {
+  // Same players, new game
+  const players = G.players.map(p => ({ name: p.name, isBot: p.isBot }));
+  initState(players);
+  showScreen('game-screen');
+  renderAll();
+  addLog(`🔄 Nueva partida. Turno de ${G.players[G.currentPlayer].name}`, true);
+  if (G.players[G.currentPlayer].isBot) setTimeout(botTurn, 1200);
+}
+
+function goSetup() {
+  showScreen('setup-screen');
+}
+
+
+// ═══════════════════════════════════════════════
+//  HOTSEAT PASS SCREEN
+// ═══════════════════════════════════════════════
+function showPassScreen(playerIdx) {
+  document.getElementById('passTitle').textContent = `Pasá el dispositivo`;
+  document.getElementById('passSubtitle').textContent = `Es el turno de ${G.players[playerIdx].name}`;
+  showScreen('pass-screen');
+}
+
+function revealHand() {
+  showScreen('game-screen');
+  renderAll();
+  if (G.players[G.currentPlayer].isBot) scheduleBot();
+}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+updatePlayerList();
+</script>
+</body>
+</html>
